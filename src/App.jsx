@@ -47,11 +47,11 @@ function App() {
     <div className='mx-auto max-w-[44rem] px-6'>
       <Search getInput={getInput} />
       {error && (
-        <div>
+        <div className='flex flex-col items-center  '>
           <h1 className='text-center mt-10 font-bold capatalize text-5xl text-teal-400'>
             No data found !
           </h1>
-          <button onClick={() => setError(false)}>Go back</button>
+          <button className='bg-yellow-300 px-4 py-2 rounded-lg mt-6 font-medium' onClick={() => setError(false)}>Go back</button>
         </div>
       )}
       {!error && (
