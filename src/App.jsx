@@ -58,7 +58,7 @@ function App() {
             weight={pokemon.weight}
             height={pokemon.height}
             types={pokemon.types}
-            img={pokemon.sprites.front_default}
+            img={pokemon.sprites.other['official-artwork'].front_default}
           />
           <Stats stats={pokemon.stats} />
 
