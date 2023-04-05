@@ -10,6 +10,9 @@ const Stats = ({ stats }) => {
             let second = d.stat.name.split("-")[1];
             d.stat.name = "sp. " + second;
           }
+          if (d.base_stat > 100) {
+            d.base_stat = 100;
+          }
           return (
             <div
               key={d.stat.name}
