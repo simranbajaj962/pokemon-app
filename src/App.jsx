@@ -1,36 +1,67 @@
 import Profile from "./components/Profile";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Stats from "./components/Stats";
 import Search from "./components/Search";
 import { LoadingSpinner } from "./components/Loading";
 
+const initialState = {
+  pokemon: undefined,
+  error: false,
+  isLoading: false,
+};
+
+const reducer = (state, action) => {
+  if (action.type == "SET_POKEMON") {
+    return { ...state, pokemon: action.pokemon, isLoading: false };
+  }
+  if (action.type == "SET_ERROR") {
+    return { ...state, error: true, isLoading: false };
+  }
+  if (action.type == "RESET_ERROR_LOADING") {
+    return { ...state, error: false, isLoading: false };
+  }
+  if (action.type == "IS_LOADING") {
+    return { ...state, isLoading: true };
+  }
+  if (action.type == "SET_ERROR_FALSE") {
+    return { ...state, error: false };
+  }
+};
+
 function App() {
   const [name, setName] = useState("");
   const [id, setId] = useState(1);
-  const [error, setError] = useState(false);
-  const [pokemon, setPokemon] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(false);
+  // const [pokemon, setPokemon] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
+
+  const [pokemonState, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     let ignore = false;
-    setError(false);
-    setIsLoading(false);
+    // setError(false);
+    // setIsLoading(false);
+
+    dispatch({ type: "RESET_ERROR_LOADING" });
 
     const fetchPokemon = async () => {
-      setIsLoading(true);
+      // setIsLoading(true);
+      dispatch({ type: "IS_LOADING" });
       const res = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${name !== "" ? name : id}`
       );
 
       if (!res.ok) {
-        setError(true);
-        setIsLoading(false);
+        // setError(true);
+        // setIsLoading(false);
+        dispatch({ type: "SET_ERROR" });
       }
 
       const data = await res.json();
       if (!ignore) {
-        setPokemon(data);
-        setIsLoading(false);
+        // setPokemon(data);
+        // setIsLoading(false);
+        dispatch({ type: "SET_POKEMON", pokemon: data });
       }
     };
 
@@ -44,32 +75,35 @@ function App() {
   function getInput(name) {
     setName(name);
   }
-
+  const { pokemon } = pokemonState;
   if (!pokemon) return null;
 
   return (
     <div className="mx-auto max-w-[44rem] px-6">
       <Search getInput={getInput} />
-      {error && (
+      {pokemonState.error && (
         <div className="flex flex-col items-center  ">
           <h1 className="text-center mt-10 font-bold capatalize text-5xl text-teal-400">
             No data found !
           </h1>
           <button
             className="bg-yellow-300 px-4 py-2 rounded-lg mt-6 font-medium"
-            onClick={() => setError(false)}
+            onClick={() => {
+              // setError(false)
+              dispatch({ type: "SET_ERROR_FALSE" });
+            }}
           >
             Go back
           </button>
         </div>
       )}
 
-      {isLoading && (
+      {pokemonState.isLoading && (
         <div className="mt-12">
           <LoadingSpinner width={50} height={50} />
         </div>
       )}
-      {!error && !isLoading && (
+      {!pokemonState.error && !pokemonState.isLoading && (
         <>
           <Profile
             name={pokemon.name}
